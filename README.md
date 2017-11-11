@@ -4,6 +4,7 @@
 
 IQ Option API for Python
 
+* Version: 0.1a
 * Python: 2, 3
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
