@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name="IQOption API",
+    name="iqoption-api",
     version="0.1a",
     packages=find_packages(),
     author="Sri Harsha Gangisetty",
