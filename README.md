@@ -33,4 +33,7 @@ IQ Option API for Python
 
 
 ### Check Positions Modified/Opened After API Started
-		print(api.positions)  
+        print(api.positions)  
+
+### Get Server Tick
+        print(api.tick) ## range 0, 59
