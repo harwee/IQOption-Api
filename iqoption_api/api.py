@@ -6,7 +6,7 @@ from  datetime import datetime
 import json
 from .position import Position
 
-class API():
+class IQOption():
     
     practice_balance = 0
     real_balance = 0
