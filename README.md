@@ -11,10 +11,11 @@ IQ Option API for Python
 
 ## Basic Usage
 
-### Login
+### Initialisation
         from iqoption_api import IQOption
         api = IQOption("mail@email.com","password")
         api.login() # Returns True if successful else False
+        api.start_socket_connection()
 
 ### Check Account Type
 
@@ -29,3 +30,7 @@ IQ Option API for Python
 
 ### Change Account
         api.change_account("real") # `real` or `practice` Returns Account Type (`real` or `practice`)
+
+
+### Check Positions Modified/Opened After API Started
+		print(api.positions)  
