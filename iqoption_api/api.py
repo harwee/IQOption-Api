@@ -4,7 +4,7 @@ import time
 from threading import Thread
 from  datetime import datetime
 import json
-from .position import Position
+from position import Position
 
 class IQOption():
     
@@ -12,6 +12,12 @@ class IQOption():
     real_balance = 0
     server_time = 0
     positions = {}
+    instruments_categories = ["cfd","forex","crypto"]
+    top_assets_categories = ["forex","crypto","binary"]
+    instruments_to_id = {}
+    id_to_instruments = {}
+    market_data = {}
+    
     
     def __init__(self,username,password,host="iqoption.com"):
         
@@ -39,8 +45,14 @@ class IQOption():
         self.__login_response = self.session.request(url=self.login_url,data=data,method="POST")
         requests.utils.add_dict_to_cookiejar(self.session.cookies, dict(platform="9"))
         json_login_response = self.__login_response.json()
-        self.__ssid = self.__login_response.cookies["ssid"]
-        self.parse_account_info(json_login_response)
+        if json_login_response["isSuccessful"]:
+            self.__ssid = self.__login_response.cookies["ssid"]
+            self.parse_account_info(json_login_response)
+            self.start_socket_connection()
+            time.sleep(1) ## artificial delay to complete socket connection
+            self.get_instruments()
+            self.get_top_assets()
+            time.sleep(1) ## artificial delay to populate symbols
         return json_login_response["isSuccessful"]
     
     def parse_account_info(self,jsondata):
@@ -63,7 +75,7 @@ class IQOption():
             self.server_time = datetime.fromtimestamp(self.__server_timestamp/1000)
             self.tick = self.server_time.second
         
-        elif message["name"] == "heartbeat":
+        elif message["name"] in  ["heartbeat","tradersPulse"]:
             pass
         
         elif message["name"] == "profile":
@@ -72,6 +84,15 @@ class IQOption():
         elif message["name"] == "position-changed":
             self.parse_position_message(message["msg"])
         
+        elif message["name"] == "newChartData":
+            self.parse_new_chart_data_message(message["msg"])
+        
+        elif message["name"] == "top-assets":
+            self.parse_top_assets_message(message["msg"])
+        
+        elif message["name"] == "instruments":
+            self.parse_instruments_message(message["msg"])      
+            
         else:
             pass
     
@@ -110,9 +131,7 @@ class IQOption():
         elif "balance" in message and "balance_id" in message:
             self.balance = message["balance"]
             self.active_account = self.id_to_account[message["balance_id"]]
-        
-        else:
-            pass
+
     
     def parse_position_message(self,message):
         id = message["id"]
@@ -120,6 +139,30 @@ class IQOption():
             self.positions[id].update(message)
         else:
             self.positions[id] = Position(message)
+    
+    def parse_new_chart_data_message(self,message):
+        symbol = message["symbol"]
+        if symbol in self.market_data:
+            self.market_data[symbol][message["time"]]= message
+        else:
+            self.market_data[symbol] = {message["time"]: message}
+    
+    
+    def parse_top_assets_message(self,message):
+        instrument_type = message["instrument_type"]
+        temp = {}
+        for ele in message["data"]:
+            temp[ele["active_id"]] = ele["active_id"]
+        self.__dict__["{}_top_assets".format(instrument_type)] = temp
+    
+    def parse_instruments_message(self,message):
+        instrument_type = message["type"]
+        temp = {}
+        for ele in message["instruments"]:
+            temp[ele["id"]] = ele["active_id"]
+            self.instruments_to_id[ele["id"]] = ele["active_id"]
+            self.id_to_instruments[ele["active_id"]] = ele["id"]
+        self.__dict__["{}_instruments".format(instrument_type)] = temp
             
     
     def change_account(self,account_type):
@@ -134,4 +177,17 @@ class IQOption():
         """Update Account Info"""
         
         self.parse_account_info(self.session.request(url=self.getprofile_url,method="GET").json())
-            
+    
+    def get_top_assets(self):
+        for ele in self.top_assets_categories:
+            self.send_socket_message("sendMessage",{"name":"get-top-assets","version":"1.1","body":{"instrument_type":ele}})
+    
+    def get_instruments(self):
+        for ele in self.instruments_categories:
+            self.send_socket_message("sendMessage",{"name":"get-instruments","version":"1.0","body":{"type":ele}})
+    
+    
+    def subscribe_market(self,market_name=None,market_id=None):
+        if market_name:
+            market_id = self.instruments_to_id.get(market_name)
+        self.send_socket_message("subscribeMessage",{"name":"quote-generated","version":"1.0","params":{"routingFilters":{"active_id":market_id}}})

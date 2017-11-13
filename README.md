@@ -4,7 +4,7 @@
 
 IQ Option API for Python
 
-* Version: 0.1a
+* Version: 0.2a
 * Python: 2, 3
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
@@ -37,3 +37,14 @@ IQ Option API for Python
 
 ### Get Server Tick
         print(api.tick) ## range 0, 59
+
+### Get Instruments
+        print(api.instruments_to_id) ## All Instruments Recieved
+        print(api.forex_instruments)
+        print(api.cfd_instruments)
+        print(api.crypto_instruments)
+
+### Subscribe to Realtime Market Data
+        api.subscribe_market("EURUSD")
+        
+        
