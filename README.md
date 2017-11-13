@@ -2,12 +2,18 @@
 
 # IQOption Api
 
-IQ Option API for Python
 
-* Version: 0.2a
+A Simple websocket API for IQ Option.
+
+
+
+* Version: 0.1a
 * Python: 2, 3
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
+
+### Next Addition
+* Ability to place Put, Sell Binary and Digital Options
 
 ## Basic Usage
 
@@ -39,12 +45,13 @@ IQ Option API for Python
         print(api.tick) ## range 0, 59
 
 ### Get Instruments
-        print(api.instruments_to_id) ## All Instruments Recieved
+        print(api.instruments_to_id) ## All Instruments Websocket Returned
         print(api.forex_instruments)
         print(api.cfd_instruments)
         print(api.crypto_instruments)
 
 ### Subscribe to Realtime Market Data
         api.subscribe_market("EURUSD")
-        
-        
+
+### Access Market Data
+        api.market_data
