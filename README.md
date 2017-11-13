@@ -7,7 +7,7 @@ A Simple websocket API for IQ Option.
 
 
 
-* Version: 0.1a
+* Version: 0.2a
 * Python: 2, 3
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
