@@ -7,13 +7,13 @@ A Simple websocket API for IQ Option.
 
 
 
-* Version: 0.2a
+* Version: 0.3a
 * Python: 2, 3
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
 
 ### Next Addition
-* Ability to place Put, Sell Binary and Digital Options
+* Ability to place Put, Sell Digital Options
 
 ## Basic Usage
 
@@ -55,3 +55,24 @@ A Simple websocket API for IQ Option.
 
 ### Access Market Data
         api.market_data
+### Update Expiration list
+        api.update_expiration_list("EURUSD")
+    
+### Get Expiration List
+        print(api.binary_expiration_list["EURUSD"])
+        
+        ### Sample Response
+            [{u'expiration_length': 60, u'type': u'PT1M', u'dead_time_length': 10, u'time': 1512475620},             {u'expiration_length': 300, u'type': u'PT5M', u'dead_time_length': 10, u'time': 1512475800}]
+
+
+### Place a Binary Position
+        api.open_position(direction="put",
+                        expiration_time=api.binary_expiration_list["EURUSD"][-1]["time"],
+                        market_name="EURUSD",
+                        price=5,
+                        type="turbo"
+                        )
+        
+        
+        
+    
