@@ -6,7 +6,7 @@ from  datetime import datetime
 import json
 from .position import Position
 from .constants import ACTIVES
-
+             
 class IQOption():
     
     practice_balance = 0
@@ -20,6 +20,7 @@ class IQOption():
     market_data = {}
     binary_expiration_list = {}
     digital_strike_list = {}
+    candle_data = {}
     
     
     def __init__(self,username,password,host="iqoption.com"):
@@ -102,8 +103,12 @@ class IQOption():
         
         elif message["name"] == "expiration-list":
             self.parse_expiration_list_message(message["msg"])
+        
+        elif message["name"] == "candles":
+            self.parse_candles_message(message["msg"])
             
         else:
+#             print(message)
             pass
     
     def on_socket_connect(self,socket):
@@ -181,8 +186,15 @@ class IQOption():
     def parse_update_position_message(self,message):
         for ele in message:
             self.positions[ele["id"]] = ele
-            
     
+    def parse_candles_message(self,message):
+        self.__latest_candles_data = message["data"]
+        market_name = self.id_to_instruments[message["active_id"]]
+        if market_name in self.candle_data:
+            self.candle_data[market_name][message["duration"]] = message["data"]
+        else:
+            self.candle_data[market_name] = {message["duration"]:message["data"]}
+            
     def change_account(self,account_type):
         """Change active account `real` or `practice`"""
         
@@ -227,5 +239,18 @@ class IQOption():
         act = self.instruments_to_id[market_name],
         type = type,
         )
-        self.send_socket_message("buyV2",msg)
-        
+        self.send_socket_message("buyV2",msg) 
+    
+    def update_candle_data(self,market_name,interval,start_time,end_time):
+        """
+            interval (seconds)
+            start_time (integer timestamp) 
+            end_time (integer tiestamp)
+        """
+        chunk_size = int((end_time-start_time)/interval)+5
+        self.send_socket_message("candles",{"active_id":self.instruments_to_id[market_name],
+                                            "duration":interval,
+                                            "chunk_size":chunk_size,
+                                            "from":start_time,
+                                            "till":end_time,
+                                           })
