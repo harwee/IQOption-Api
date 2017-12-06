@@ -73,6 +73,12 @@ A Simple websocket API for IQ Option.
                         type="turbo"
                         )
         
-        
-        
-    
+
+### Update Candle Data
+
+        # api.update_candle_data(market_name,interval,start_time,end_time)
+        api.update_candle_data("EURUSD",1,0,int(time.time())) ## get latest 1000 candles with 1 second interval
+
+### Access CandleData
+        # api.candle_data[market_name][interval] # list of lists  [time,open,close,high,low]
+        print(api.candle_data["EURUSD][1]) # prints candles 
