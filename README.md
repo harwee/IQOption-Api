@@ -12,6 +12,9 @@ A Simple websocket API for IQ Option.
 * Website: https://github.com/harwee/IQOption-Api
 * Author: Sri Harsha Gangisetty
 
+## IMPORTANT
+There are currently issues with this package functioning normally. The whole code will be overhauled and Python2 support will be removed, converting the whole code to run in asynchronous way using Python3 `asyncio` library. When the new lib is released is not yet decided but it will be soon.
+
 ### Next Addition
 * Ability to place Put, Sell Digital Options
 
