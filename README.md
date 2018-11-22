@@ -1,4 +1,6 @@
 
+# Harwee is damn busy and will not be responding to anyone hereafter. If you have any issues then please try to solve it yourself or try some another library.
+
 
 # IQOption Api
 
