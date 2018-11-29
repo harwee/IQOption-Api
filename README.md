@@ -2,86 +2,153 @@
 
 # IQOption Api
 
+A simple asynchronous API for IQOption
 
-A Simple websocket API for IQ Option.
+* Version: 0.3a0
+* Python: 3.6+
+* Repository: https://github.com/harwee/IQOption-Api
+* Author: SriHarsha Gangisetty
 
+## Contributors Required
 
-
-* Version: 0.3a
-* Python: 2, 3
-* Website: https://github.com/harwee/IQOption-Api
-* Author: Sri Harsha Gangisetty
-
-## IMPORTANT
-There are currently issues with this package functioning normally. The whole code will be overhauled and Python2 support will be removed, The whole code  will be converted to run  asynchronously using Python3 `asyncio` library. Date of release of new package is not yet decided but it will be released soon.
-
-### Next Addition
-* Ability to place Put, Sell Digital Options
+* Bug Fixes and new feature implementations are welcome
+* The current code is limited to Python 3.6+ To make this compatible with Python > 2 and Python < 3.6 I am thiking of Tornado Implementation (https://www.tornadoweb.org/en/stable/releases/v5.0.0.html) but no guarantees
+* Any one willing to contribute create a pull request to `async`  branch
 
 ## Basic Usage
 
 ### Initialisation
         from iqoption_api import IQOption
-        api = IQOption("mail@email.com","password")
-        api.login() # Returns True if successful else False
-        api.start_socket_connection()
+        iqoption = IQOption("mail@email.com","password")
+        iqoption.start()
 
-### Check Account Type
+### Check Account Balance 
 
-        print(api.active_account) # prints `real` or `practice`
+        print(api.active_balance_id) # Prints the active balance id
 
 ### Check Active Account Balance
-        print(api.balance) # prints active account balance
-
-### Check Balances
-        print(api.real_balance) # prints real account balance
-        print(api.practice_balance) # prints practice account balance
+        balance_id = api.active_balance_id
+        balance_object = api.balances[balance_id]
+        print(balance_object["amount"]) # prints active account balance
 
 ### Change Account
-        api.change_account("real") # `real` or `practice` Returns Account Type (`real` or `practice`)
+
+        await iqoption.change_balance(balance_id) ## For Asynchronous
+        iqoption.change_balance_sync(balance_id) ## For Synchronous
 
 
 ### Check Positions Modified/Opened After API Started
-        print(api.positions)  
+        print(iqoption.portfolio)  
 
-### Get Server Tick
-        print(api.tick) ## range 0, 59
 
 ### Get Instruments
-        print(api.instruments_to_id) ## All Instruments Websocket Returned
-        print(api.forex_instruments)
-        print(api.cfd_instruments)
-        print(api.crypto_instruments)
+        print(api.options) ## All Instruments Websocket Returned
+        print(api.options["binary"]) ## All binary Options Websocket Returned
 
 ### Subscribe to Realtime Market Data
-        api.subscribe_market("EURUSD")
 
-### Access Market Data
-        api.market_data
-### Update Expiration list
-        api.update_expiration_list("EURUSD")
-    
-### Get Expiration List
-        print(api.binary_expiration_list["EURUSD"])
-        
-        ### Sample Response
-            [{u'expiration_length': 60, u'type': u'PT1M', u'dead_time_length': 10, u'time': 1512475620},             {u'expiration_length': 300, u'type': u'PT5M', u'dead_time_length': 10, u'time': 1512475800}]
+>   Subscribe method must be called to get first candle data and auto update real time price of option 
+> 
+        EURUSD = iqoption.options["binary"]["EURUSD"]
+
+        await EURUSD.subscribe() ## For Asynchronous
+        EURUSD.subscribe_sync() ## For Synchronous
+
+### Subscribe to Candle Data
+> interval (`int`) in Seconds
 
 
-### Place a Binary Position
-        api.open_position(direction="put",
-                        expiration_time=api.binary_expiration_list["EURUSD"][-1]["time"],
-                        market_name="EURUSD",
-                        price=5,
-                        type="turbo"
-                        )
-        
+        await EURUSD.subscribe_to_candle_interval(interval) ## For Asynchronous
+        EURUSD.subscribe_to_candle_interval_sync(interval) ## For Synchronous
 
-### Update Candle Data
+### Get Expiration list
 
-        # api.update_candle_data(market_name,interval,start_time,end_time)
-        api.update_candle_data("EURUSD",1,0,int(time.time())) ## get latest 1000 candles with 1 second interval
+        await EURUSD.get_expiration_list() ## For Asynchronous
+        EURUSD.get_expiration_list_sync() ## For Synchronous
 
 ### Access CandleData
-        # api.candle_data[market_name][interval] # list of lists  [time,open,close,high,low]
-        print(api.candle_data["EURUSD][1]) # prints candles 
+       print(EURUSD.candles)
+
+### Place a Binary Position
+
+
+
+> expiration_type (`string`) =`1M`,`15M`,`EOD`,`EOW` or `EOM` 
+
+> direction (`string`) = `put` or `call`
+
+        await EURUSD.buy_v2(price,direction,value,expiration,expiration_type,timeout) ## For Asynchronous
+        EURUSD.buy_v2_sync(price,direction,value,expiration,expiration_type,timeout) ## For Synchronous
+
+### Send Socket Message Directly
+
+        await EURUSD.send_socket_message(name, message, request_id(optional)) ## For Asynchronous
+        EURUSD.send_socket_message_sync(name, message, request_id(optional)) ## For Synchronous
+
+### Send Message Directly
+
+        await EURUSD.send_message(message) ## For Asynchronous
+        EURUSD.send_message_sync(message) ## For Synchronous
+
+### Send Subscribe Message Directly
+
+        await EURUSD.send_subscribe_message(message) ## For Asynchronous
+        EURUSD.send_subscribe_message_sync(message) ## For Synchronous
+
+### Send unSubscribe Message Directly
+
+        await EURUSD.send_unsubscribe_message(message) ## For Asynchronous
+        EURUSD.send_unsubscribe_message_sync(message) ## For Synchronous
+
+### Send subscribe Directly
+
+        await EURUSD.subscribe(message) ## For Asynchronous
+        EURUSD.subscribe_sync(message) ## For Synchronous
+
+### Send unsubscribe Directly
+
+        await EURUSD.unsubscribe(message) ## For Asynchronous
+        EURUSD.unsubscribe_sync(message) ## For Synchronous
+
+### Update Balances Manually
+
+        await EURUSD.update_balances(message) ## For Asynchronous
+        EURUSD.update_balances_sync(message) ## For Synchronous
+
+### Server Time
+
+        print(iqoption.server_time) ## Prints Server time
+
+
+### Attributes of BinaryOption 
+
+        BinaryOption.id 
+        BinaryOption.name
+        BinaryOption.group_id
+        BinaryOption.min_bet
+        BinaryOption.max_be
+        BinaryOption.precision
+        BinaryOption.is_enabled
+        BinaryOption.schedule
+        BinaryOption.image
+        BinaryOption.parent
+        BinaryOption.candle_update_rate
+        BinaryOption.first_candle
+        BinaryOption.candles
+        BinaryOption.option
+        BinaryOption.deadtime
+
+        BinaryOption.bid
+        BinaryOption.ask
+        BinaryOption.value
+        BinaryOption.volume
+        BinaryOption.show_value
+        BinaryOption.buy
+        BinaryOption.sell
+
+
+* Example
+        
+        EURUSD.buy # get current buy price
+        EURUSD.sell # get current sell price
+        EURUSD.bid # get current bid price
