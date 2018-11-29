@@ -13,7 +13,7 @@ A Simple websocket API for IQ Option.
 * Author: Sri Harsha Gangisetty
 
 ## IMPORTANT
-There are currently issues with this package functioning normally. The whole code will be overhauled and Python2 support will be removed, The whole code  will be converted to run  asynchronously using Python3 `asyncio` library. Date of release of new package is not yet decided but it will be released soon.
+Please use the code from `async` branch master branch will be updated onceall the basic functionality is completly rewritten in async branch.
 
 ### Next Addition
 * Ability to place Put, Sell Digital Options
