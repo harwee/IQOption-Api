@@ -12,7 +12,7 @@ A simple asynchronous API for IQOption
 ## Contributors Required
 
 * Bug Fixes and new feature implementations are welcome
-* The current code is limited to Python 3.6+ To make this compatible with Python > 2 and Python < 3.6 I am thiking of Tornado Implementation (https://www.tornadoweb.org/en/stable/releases/v5.0.0.html) but no guarantees
+* The current code is limited to Python 3.6+ To make this compatible with Python > 2 and Python < 3.6 I am thinking of Tornado Implementation (https://www.tornadoweb.org/en/stable/releases/v5.0.0.html) but no guarantees
 * Any one willing to contribute create a pull request to `async`  branch
 
 ## Basic Usage
@@ -122,11 +122,12 @@ A simple asynchronous API for IQOption
 
 ### Attributes of BinaryOption 
 
+        BinaryOption.type 
         BinaryOption.id 
         BinaryOption.name
         BinaryOption.group_id
         BinaryOption.min_bet
-        BinaryOption.max_be
+        BinaryOption.max_bet
         BinaryOption.precision
         BinaryOption.is_enabled
         BinaryOption.schedule
