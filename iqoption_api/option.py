@@ -30,50 +30,6 @@ class Option(object):
         self._show_value = 0
         self._buy = 0
         self._sell = 0
-
-    @property
-    def type(self):
-        return self._type
-    
-    @property
-    def name(self):
-        return self._name
-        
-    @property
-    def id(self):
-        return self._id
-    
-    @property
-    def candles(self):
-        return self._candles
-    
-    @property
-    def bid(self):
-        return self._bid
-    
-    @property
-    def ask(self):
-        return self._ask
-    
-    @property
-    def value(self):
-        return self._value
-    
-    @property
-    def buy(self):
-        return self._buy
-    
-    @property
-    def sell(self):
-        return self._sell
-    
-    @property
-    def volume(self):
-        return self._volume
-    
-    @property
-    def show_value(self):
-        return self._show_value
     
     async def is_valid_interval(self, interval):
         valid_intervals = list(self._first_candles.keys())
@@ -126,3 +82,14 @@ class Option(object):
 
     def subscribe_to_candle_interval_sync(self, interval):
         return asyncio.run_coroutine_threadsafe(self.subscribe_to_candle_interval(interval),self._parent._async_loop).result()
+    
+    def __getattr__(self, attr):
+        internal_atttribute = "_"+attr
+        if internal_atttribute in self.__dict__:
+            return self.__dict__[internal_atttribute]
+        raise(AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__,attr)))
+    
+    def __setattr__(self, attr, value):
+        if attr.startswith("_"):
+            return super().__setattr__(attr,value)
+        raise(AttributeError(" Cannot set attribute '{1}' to '{0}' ".format(self.__class__.__name__,attr)))

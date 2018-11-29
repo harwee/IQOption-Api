@@ -63,3 +63,4 @@ class BinaryOption(Option):
     
     def buy_v2_sync(self,price,direction,value,expiration,expiration_type,timeout=10):
         return asyncio.run_coroutine_threadsafe(self.buy_v2(price,direction,value,expiration,expiration_type,timeout=timeout),self._parent._async_loop).result()
+    
