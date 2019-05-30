@@ -7,7 +7,7 @@ import threading
 import logging
 import random
 from concurrent import futures
-LOGIN_URL = "https://iqoption.com/api/login"
+LOGIN_URL = "https://auth.iqoption.com/api/v1.0/login"
 WSS_URL = "wss://iqoption.com/echo/websocket"
 
 from .binary_option import BinaryOption
